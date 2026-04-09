@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/", "destination": "/login.html" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

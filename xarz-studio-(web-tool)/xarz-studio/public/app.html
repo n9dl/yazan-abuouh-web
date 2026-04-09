@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Xarz Studio</title>
+<!-- Guard: redirect to login if no access -->
+<script>
+  if (sessionStorage.getItem('xarz_access') !== 'granted') {
+    window.location.replace('login.html');
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@300;400;500;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ════ APP ════ -->
+<div id="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside id="sb">
+    <div class="sb-top">
+      <button class="tab-b on" onclick="switchTab('text',this)">✍️ النص</button>
+      <button class="tab-b" onclick="switchTab('design',this)">🎨 التصميم</button>
+      <button class="tab-b" onclick="switchTab('export',this)">⬇️ تصدير</button>
+    </div>
+    <div class="sb-sc">
+
+      <!-- TAB: النص -->
+      <div class="tp on" id="tp-text">
+
+        <div class="sec" id="s-q">
+          <div class="sh" onclick="tgl('s-q')"><span class="si">💬</span><span class="st">نص الاقتباس</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <textarea id="qTxt" class="inp" rows="4" oninput="R()">ينشأ التوتر غالباً من عدم التحرك أو اتخاذ إجراء تجاه شيء نملك السيطرة عليه.</textarea>
+            <div class="row"><span class="lb">اتجاه</span><div style="display:flex;gap:4px;flex:1"><button class="btn sm ac" id="dR" onclick="setDir('rtl',this)">عربي</button><button class="btn sm" id="dL" onclick="setDir('ltr',this)">English</button></div></div>
+            <div class="row"><span class="lb">الخط</span>
+              <select id="qFont" class="inp" onchange="R()">
+                <option value="Cairo">Cairo</option><option value="Tajawal">Tajawal</option>
+                <option value="Amiri">Amiri</option><option value="Scheherazade New">Scheherazade</option>
+                <option value="IBM Plex Sans Arabic">IBM Plex Arabic</option>
+              </select>
+            </div>
+            <div class="row"><span class="lb">الحجم</span><input type="range" id="qSz" class="inp" min="16" max="120" value="56" oninput="sv('qSzV',this.value+'px');R()"><span class="vl" id="qSzV">56px</span></div>
+            <div class="row"><span class="lb">الوزن</span>
+              <select id="qW" class="inp" onchange="R()">
+                <option value="400">عادي</option><option value="600">نصف غامق</option><option value="700">غامق</option><option value="800" selected>أثقل</option><option value="900">الأثقل</option>
+              </select>
+            </div>
+            <div class="row"><span class="lb">المحاذاة</span>
+              <select id="qAlign" class="inp" onchange="R()">
+                <option value="right" selected>يمين ←</option><option value="center">وسط</option><option value="left">يسار →</option>
+              </select>
+            </div>
+            <div class="row"><span class="lb">ارتفاع سطر</span><input type="range" id="qLH" class="inp" min="1" max="2.5" step="0.05" value="1.55" oninput="sv('qLHV',this.value);R()"><span class="vl" id="qLHV">1.55</span></div>
+            <div class="row"><span class="lb">اللون</span><input type="color" id="qCol" class="inp" value="#111111" oninput="R()"></div>
+            <div class="row"><span class="lb">عرض النص</span><input type="range" id="qW2" class="inp" min="30" max="100" value="80" oninput="sv('qW2V',this.value+'%');R()"><span class="vl" id="qW2V">80%</span></div>
+            <div class="hd"></div>
+            <div class="lh">موضع النص</div>
+            <div class="row"><span class="lb">أفقي X</span><input type="range" id="qX" class="inp" min="-500" max="500" value="0" oninput="sv('qXV',this.value+'px');R()"><span class="vl" id="qXV">0px</span></div>
+            <div class="row"><span class="lb">عمودي Y</span><input type="range" id="qY" class="inp" min="-500" max="500" value="0" oninput="sv('qYV',this.value+'px');R()"><span class="vl" id="qYV">0px</span></div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-hl">
+          <div class="sh" onclick="tgl('s-hl')"><span class="si">🖌️</span><span class="st">تمييز الكلمات</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div style="font-size:10px;color:var(--t2);line-height:1.65;background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);border-radius:6px;padding:7px 9px">
+              💡 حدّد أي كلمة في اللوحة بالسحب — يُضاف تلقائياً. أو اكتب يدوياً ثم ⏎
+            </div>
+            <div class="hlrow">
+              <input type="text" id="hlIn" class="inp" placeholder="اكتب كلمة أو عبارة…" style="flex:1">
+              <button class="btn sm ac" onclick="addHL()">إضافة</button>
+              <button class="btn sm red" onclick="clearHL()">✕</button>
+            </div>
+            <div class="hltags" id="hlTags"></div>
+            <div class="row"><span class="lb">اللون</span><input type="color" id="hlCol" class="inp" value="#5b9bd5" oninput="R()"></div>
+            <div class="row"><span class="lb">الشفافية</span><input type="range" id="hlOp" class="inp" min="0" max="100" value="55" oninput="sv('hlOpV',this.value+'%');R()"><span class="vl" id="hlOpV">55%</span></div>
+            <div class="row"><span class="lb">الانحناء</span><input type="range" id="hlR" class="inp" min="0" max="20" value="5" oninput="sv('hlRV',this.value+'px');R()"><span class="vl" id="hlRV">5px</span></div>
+            <div class="g2">
+              <div class="col"><span class="lb">Pad X</span><input type="range" id="hlPX" class="inp" min="0" max="30" value="8" oninput="sv('hlPXV',this.value+'px');R()"><span class="vl" id="hlPXV">8px</span></div>
+              <div class="col"><span class="lb">Pad Y</span><input type="range" id="hlPY" class="inp" min="0" max="20" value="3" oninput="sv('hlPYV',this.value+'px');R()"><span class="vl" id="hlPYV">3px</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-au">
+          <div class="sh" onclick="tgl('s-au')"><span class="si">👤</span><span class="st">المؤلف والفاصل</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="lh">موضع المجموعة</div>
+            <div class="row"><span class="lb">عمودي Y%</span><input type="range" id="auY" class="inp" min="0" max="100" value="82" oninput="sv('auYV',this.value+'%');R()"><span class="vl" id="auYV">82%</span></div>
+            <div class="row"><span class="lb">أفقي X</span><input type="range" id="auX" class="inp" min="-400" max="400" value="0" oninput="sv('auXV',this.value+'px');R()"><span class="vl" id="auXV">0px</span></div>
+            <div class="hd"></div>
+            <div class="trow"><span class="tlb">إظهار الفاصل</span><label class="tog"><input type="checkbox" id="showDiv" checked onchange="R()"><div class="tr"><div class="th"></div></div></label></div>
+            <div class="row"><span class="lb">الطول %</span><input type="range" id="divLen" class="inp" min="1" max="100" value="8" oninput="sv('divLenV',this.value+'%');R()"><span class="vl" id="divLenV">8%</span></div>
+            <div class="row"><span class="lb">السُمك</span><input type="range" id="divW" class="inp" min="1" max="20" value="2" step=".5" oninput="sv('divWV',this.value+'px');R()"><span class="vl" id="divWV">2px</span></div>
+            <div class="row"><span class="lb">لون الفاصل</span><input type="color" id="divCol" class="inp" value="#111111" oninput="R()"></div>
+            <div class="hd"></div>
+            <input type="text" id="auTxt" class="inp" value="- جيف بيزوس" placeholder="اسم المؤلف…" oninput="R()">
+            <div class="row"><span class="lb">الحجم</span><input type="range" id="auSz" class="inp" min="10" max="60" value="22" oninput="sv('auSzV',this.value+'px');R()"><span class="vl" id="auSzV">22px</span></div>
+            <div class="row"><span class="lb">اللون</span><input type="color" id="auCol" class="inp" value="#333333" oninput="R()"></div>
+            <div class="row"><span class="lb">البُعد عن الفاصل</span><input type="range" id="auGap" class="inp" min="0" max="80" value="8" oninput="sv('auGapV',this.value+'px');R()"><span class="vl" id="auGapV">8px</span></div>
+          </div>
+        </div>
+
+      </div><!-- /tp-text -->
+
+      <!-- TAB: التصميم -->
+      <div class="tp" id="tp-design">
+
+        <div class="sec" id="s-bg">
+          <div class="sh" onclick="tgl('s-bg')"><span class="si">🎨</span><span class="st">لون الخلفية</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="pal" id="bgPal">
+              <div class="sw on" style="background:#f5c842" onclick="pickBg('#f5c842',this)"></div>
+              <div class="sw" style="background:#ff6b6b" onclick="pickBg('#ff6b6b',this)"></div>
+              <div class="sw" style="background:#4ecdc4" onclick="pickBg('#4ecdc4',this)"></div>
+              <div class="sw" style="background:#a8edea" onclick="pickBg('#a8edea',this)"></div>
+              <div class="sw" style="background:#f8e8c8" onclick="pickBg('#f8e8c8',this)"></div>
+              <div class="sw" style="background:#fce4ec" onclick="pickBg('#fce4ec',this)"></div>
+              <div class="sw" style="background:#e3f2fd" onclick="pickBg('#e3f2fd',this)"></div>
+              <div class="sw" style="background:#e8f5e9" onclick="pickBg('#e8f5e9',this)"></div>
+              <div class="sw" style="background:#fff" onclick="pickBg('#ffffff',this)"></div>
+              <div class="sw" style="background:#212121" onclick="pickBg('#212121',this)"></div>
+              <div class="sw" style="background:#1a1a2e" onclick="pickBg('#1a1a2e',this)"></div>
+              <div class="sw" style="background:#0f3460" onclick="pickBg('#0f3460',this)"></div>
+            </div>
+            <div class="row"><span class="lb">مخصص</span><input type="color" id="bgC1" class="inp" value="#f5c842" oninput="S.bgC=this.value;g('bgHx').textContent=this.value;deswc();R()"><span style="font-size:10px;color:var(--t2);flex:1" id="bgHx">#f5c842</span></div>
+            <div class="trow"><span class="tlb">تدرج لوني</span><label class="tog"><input type="checkbox" id="useGrad" onchange="R()"><div class="tr"><div class="th"></div></div></label></div>
+            <div class="row"><span class="lb">اللون 2</span><input type="color" id="bgC2" class="inp" value="#ff6b6b" oninput="R()"></div>
+            <div class="row"><span class="lb">الاتجاه</span>
+              <select id="gDir" class="inp" onchange="R()">
+                <option value="135deg">قطري ↗</option><option value="0deg">↓ عمودي</option>
+                <option value="90deg">← أفقي</option><option value="radial">دائري</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-pat">
+          <div class="sh" onclick="tgl('s-pat')"><span class="si">⣿</span><span class="st">نمط الخلفية</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="pg" id="bgPatG">
+              <button class="pb on" onclick="setBgPat('none',this)">بدون</button>
+              <button class="pb" onclick="setBgPat('dots',this)">نقاط</button>
+              <button class="pb" onclick="setBgPat('grid',this)">شبكة</button>
+              <button class="pb" onclick="setBgPat('grain',this)">حبيبي</button>
+              <button class="pb" onclick="setBgPat('diag',this)">مائل</button>
+              <button class="pb" onclick="setBgPat('cross',this)">تقاطع</button>
+              <button class="pb" onclick="setBgPat('hex',this)">أمواج</button>
+              <button class="pb" onclick="setBgPat('tri',this)">مثلثات</button>
+            </div>
+            <div class="row"><span class="lb">الكثافة</span><input type="range" id="patOp" class="inp" min="0" max="100" value="15" oninput="sv('patOpV',this.value+'%');R()"><span class="vl" id="patOpV">15%</span></div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-fc">
+          <div class="sh" onclick="tgl('s-fc')"><span class="si">🪟</span><span class="st">البطاقة العائمة</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="trow"><span class="tlb">تفعيل البطاقة</span><label class="tog"><input type="checkbox" id="fcOn" onchange="R()"><div class="tr"><div class="th"></div></div></label></div>
+            <div class="row"><span class="lb">لون البطاقة</span><input type="color" id="fcBg" class="inp" value="#ffffff" oninput="R()"></div>
+            <div class="row"><span class="lb">الشفافية</span><input type="range" id="fcOp" class="inp" min="0" max="100" value="92" oninput="sv('fcOpV',this.value+'%');R()"><span class="vl" id="fcOpV">92%</span></div>
+            <div class="row"><span class="lb">الانحناء</span><input type="range" id="fcR" class="inp" min="0" max="200" value="24" oninput="sv('fcRV',this.value+'px');R()"><span class="vl" id="fcRV">24px</span></div>
+            <div class="hd"></div>
+            <div class="lh">حجم وموضع البطاقة</div>
+            <div class="row"><span class="lb">هامش ↔</span><input type="range" id="fcMX" class="inp" min="0" max="500" value="60" oninput="sv('fcMXV',this.value+'px');R()"><span class="vl" id="fcMXV">60px</span></div>
+            <div class="row"><span class="lb">هامش ↕</span><input type="range" id="fcMY" class="inp" min="0" max="500" value="60" oninput="sv('fcMYV',this.value+'px');R()"><span class="vl" id="fcMYV">60px</span></div>
+            <div class="g2">
+              <div class="col"><span class="lb">إزاحة X</span><input type="range" id="fcOX" class="inp" min="-400" max="400" value="0" oninput="sv('fcOXV',this.value+'px');R()"><span class="vl" id="fcOXV">0px</span></div>
+              <div class="col"><span class="lb">إزاحة Y</span><input type="range" id="fcOY" class="inp" min="-400" max="400" value="0" oninput="sv('fcOYV',this.value+'px');R()"><span class="vl" id="fcOYV">0px</span></div>
+            </div>
+            <div class="hd"></div>
+            <div class="lh">نمط البطاقة</div>
+            <div class="pg" id="fcPatG">
+              <button class="pb on" onclick="setFcPat('none',this)">بدون</button>
+              <button class="pb" onclick="setFcPat('dots',this)">نقاط</button>
+              <button class="pb" onclick="setFcPat('grid',this)">شبكة</button>
+              <button class="pb" onclick="setFcPat('grain',this)">حبيبي</button>
+              <button class="pb" onclick="setFcPat('diag',this)">مائل</button>
+              <button class="pb" onclick="setFcPat('cross',this)">تقاطع</button>
+              <button class="pb" onclick="setFcPat('circles',this)">دوائر</button>
+              <button class="pb" onclick="setFcPat('waves',this)">موجات</button>
+            </div>
+            <div class="row"><span class="lb">كثافة النمط</span><input type="range" id="fcPatOp" class="inp" min="0" max="100" value="20" oninput="sv('fcPatOpV',this.value+'%');R()"><span class="vl" id="fcPatOpV">20%</span></div>
+            <div class="hd"></div>
+            <div class="lh">ظل البطاقة</div>
+            <div class="row"><span class="lb">الضبابية</span><input type="range" id="shBl" class="inp" min="0" max="120" value="40" oninput="sv('shBlV',this.value);R()"><span class="vl" id="shBlV">40</span></div>
+            <div class="row"><span class="lb">الانتشار</span><input type="range" id="shSp" class="inp" min="-20" max="40" value="0" oninput="sv('shSpV',this.value);R()"><span class="vl" id="shSpV">0</span></div>
+            <div class="g2">
+              <div class="col"><span class="lb">X</span><input type="range" id="shX" class="inp" min="-60" max="60" value="0" oninput="sv('shXV',this.value);R()"><span class="vl" id="shXV">0</span></div>
+              <div class="col"><span class="lb">Y</span><input type="range" id="shY" class="inp" min="-60" max="60" value="20" oninput="sv('shYV',this.value);R()"><span class="vl" id="shYV">20</span></div>
+            </div>
+            <div class="row"><span class="lb">لون الظل</span><input type="color" id="shCol" class="inp" value="#000000" oninput="R()"><input type="range" id="shAl" class="inp" min="0" max="100" value="20" oninput="sv('shAlV',this.value+'%');R()"><span class="vl" id="shAlV">20%</span></div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-img">
+          <div class="sh" onclick="tgl('s-img')"><span class="si">🖼️</span><span class="st">صور وأيقونات</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="uz" onclick="g('iUp').click()">📁 اضغط لرفع صورة</div>
+            <input type="file" id="iUp" accept="image/*" multiple style="display:none" onchange="handleImgs(event)">
+            <div id="layList" style="display:flex;flex-direction:column;gap:3px"></div>
+            <div id="layCtrls" style="display:none">
+              <div class="hd"></div>
+              <div style="font-size:10px;color:var(--ac);font-weight:700;margin-bottom:4px">الطبقة المحددة</div>
+              <div class="row"><span class="lb">الحجم</span><input type="range" id="iSc" class="inp" min="5" max="300" value="50" oninput="sv('iScV',this.value+'%');upLay()"><span class="vl" id="iScV">50%</span></div>
+              <div class="row"><span class="lb">الدوران</span><input type="range" id="iRo" class="inp" min="0" max="360" value="0" oninput="sv('iRoV',this.value+'°');upLay()"><span class="vl" id="iRoV">0°</span></div>
+              <div class="row"><span class="lb">الشفافية</span><input type="range" id="iOp" class="inp" min="0" max="100" value="100" oninput="sv('iOpV',this.value+'%');upLay()"><span class="vl" id="iOpV">100%</span></div>
+              <div class="g2">
+                <div class="col"><span class="lb">X</span><input type="range" id="iX" class="inp" min="-540" max="540" value="0" oninput="sv('iXV',this.value+'px');upLay()"><span class="vl" id="iXV">0px</span></div>
+                <div class="col"><span class="lb">Y</span><input type="range" id="iY" class="inp" min="-540" max="540" value="0" oninput="sv('iYV',this.value+'px');upLay()"><span class="vl" id="iYV">0px</span></div>
+              </div>
+              <div style="display:flex;gap:4px;margin-top:4px">
+                <button class="btn sm" onclick="lzI('up')">⬆ للأمام</button>
+                <button class="btn sm" onclick="lzI('dn')">⬇ للخلف</button>
+                <button class="btn sm red" onclick="rmLay()">🗑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-sz">
+          <div class="sh" onclick="tgl('s-sz')"><span class="si">📐</span><span class="st">حجم اللوحة</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="pg" id="szG">
+              <button class="pb on" onclick="setSz(1080,1080,this)">1:1</button>
+              <button class="pb" onclick="setSz(1920,1080,this)">16:9</button>
+              <button class="pb" onclick="setSz(1080,1920,this)">ستوري</button>
+              <button class="pb" onclick="setSz(1200,630,this)">OG</button>
+            </div>
+            <div class="g2">
+              <div class="col"><span class="lb">العرض</span><input type="number" id="cW" class="inp" value="1080" min="200" max="3000" step="10" onchange="applySize()"></div>
+              <div class="col"><span class="lb">الارتفاع</span><input type="number" id="cH" class="inp" value="1080" min="200" max="3000" step="10" onchange="applySize()"></div>
+            </div>
+            <button class="btn ac" style="width:100%;margin-top:2px" onclick="applySize()">تطبيق الحجم</button>
+          </div>
+        </div>
+
+      </div><!-- /tp-design -->
+
+      <!-- TAB: تصدير -->
+      <div class="tp" id="tp-export">
+
+        <div class="sec" id="s-wm">
+          <div class="sh" onclick="tgl('s-wm')"><span class="si">💧</span><span class="st">العلامة المائية</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="trow"><span class="tlb">إظهار العلامة</span><label class="tog"><input type="checkbox" id="wmOn" checked onchange="R()"><div class="tr"><div class="th"></div></div></label></div>
+            <input type="text" id="wmTxt" class="inp" value="@xarz" oninput="R()">
+            <div class="row"><span class="lb">الحجم</span><input type="range" id="wmSz" class="inp" min="10" max="48" value="20" oninput="sv('wmSzV',this.value+'px');R()"><span class="vl" id="wmSzV">20px</span></div>
+            <div class="row"><span class="lb">الشفافية</span><input type="range" id="wmOp" class="inp" min="0" max="100" value="30" oninput="sv('wmOpV',this.value+'%');R()"><span class="vl" id="wmOpV">30%</span></div>
+            <div class="row"><span class="lb">اللون</span><input type="color" id="wmCol" class="inp" value="#000000" oninput="R()"></div>
+            <div class="lh" style="margin-top:4px">موضع العلامة</div>
+            <div class="wg">
+              <button class="wb" onclick="setWm('tl',this)">↖</button><button class="wb" onclick="setWm('tc',this)">↑</button><button class="wb" onclick="setWm('tr',this)">↗</button>
+              <button class="wb" onclick="setWm('ml',this)">←</button><button class="wb" onclick="setWm('mc',this)">·</button><button class="wb" onclick="setWm('mr',this)">→</button>
+              <button class="wb" onclick="setWm('bl',this)">↙</button><button class="wb" onclick="setWm('bc',this)">↓</button><button class="wb on" onclick="setWm('br',this)">↘</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" id="s-ex">
+          <div class="sh" onclick="tgl('s-ex')"><span class="si">⬇️</span><span class="st">إعدادات التصدير</span><span class="sa">▾</span></div>
+          <div class="sb">
+            <div class="row"><span class="lb">الجودة</span>
+              <select id="exSc" class="inp">
+                <option value="1">1x عادية</option><option value="2" selected>2x عالية</option><option value="3">3x فائقة</option>
+              </select>
+            </div>
+            <div class="row"><span class="lb">الصيغة</span>
+              <select id="exFmt" class="inp">
+                <option value="png">PNG</option><option value="jpeg">JPEG</option>
+              </select>
+            </div>
+            <button class="btn ac" style="width:100%;padding:10px;margin-top:4px;font-size:13px" onclick="doExport()">⬇️ تصدير الصورة</button>
+            <button class="btn" style="width:100%;margin-top:5px" onclick="doCopy()">⎘ نسخ للحافظة</button>
+            <div class="hd" style="margin-top:8px"></div>
+            <button class="btn red" style="width:100%;margin-top:2px;font-size:10.5px"
+              onclick="if(confirm('مسح كل الإعدادات المحفوظة؟')){localStorage.removeItem('xarz_state');location.reload()}">
+              🗑 مسح المحفوظات وإعادة ضبط
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /tp-export -->
+
+    </div><!-- /sb-sc -->
+  </aside>
+  <div id="sbov" onclick="closeSB()"></div>
+
+  <!-- ══ MAIN ══ -->
+  <div id="main">
+    <div id="topbar">
+      <button class="mbtn" id="mbtn" onclick="toggleSB()">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+      <div class="logo"><div class="logo-ico">✦</div>Xarz Studio</div>
+      <div class="tsep"></div>
+      <span style="font-size:10px;color:var(--t2);font-family:monospace" id="szBadge">1080 × 1080</span>
+      <button class="tbtn" onclick="toggleTheme()">🌓 <span>ثيم</span></button>
+      <button class="tbtn ac" onclick="doExport()">⬇️ <span>تصدير</span></button>
+      <button class="tbtn" onclick="logout()" style="opacity:.6" title="تسجيل خروج">⏻</button>
+    </div>
+
+    <div id="ca">
+      <div id="cw">
+        <div id="card">
+          <div id="bg-grad"></div>
+          <div id="bg-pat"></div>
+          <div id="float-card"></div>
+          <div id="quote-el"></div>
+          <div id="author-grp">
+            <hr id="div-line" style="border:none;border-top:2px solid #111;width:80px;margin:0">
+            <div id="author-name" style="font-size:22px;font-weight:600;color:#333">- جيف بيزوس</div>
+          </div>
+          <div id="wm" style="bottom:20px;left:20px;font-size:20px;opacity:.3;color:#000">@xarz</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- FAB — mobile only -->
+<button id="fab" onclick="toggleSB()" style="display:none">
+  ⚙️ الإعدادات
+</button>
+
+<div id="eov">
+  <div class="spin"></div>
+  <div style="color:var(--t2);font-size:12px;font-family:'Cairo',sans-serif">جارٍ تصدير الصورة…</div>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

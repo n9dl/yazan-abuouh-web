@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Xarz Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;height:100%;font-family:'Cairo',sans-serif;background:#080810;color:#f0f0f8;direction:rtl;overflow:hidden}
+
+.bg-glow{position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 20%,rgba(245,200,66,.07) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 60% at 80% 80%,rgba(255,107,107,.05) 0%,transparent 70%);
+  animation:pulse 8s ease-in-out infinite alternate}
+@keyframes pulse{0%{opacity:.6}100%{opacity:1}}
+
+.bg-grid{position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:40px 40px}
+
+.wrap{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px}
+
+.card{
+  width:100%;max-width:400px;
+  background:#10101a;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  padding:40px 36px 36px;
+  display:flex;flex-direction:column;gap:24px;
+  box-shadow:0 0 0 1px rgba(245,200,66,.04),0 24px 60px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);
+  animation:slideUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px}
+.logo-mark{
+  width:46px;height:46px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,#f5c842,#ff6b6b);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 6px 24px rgba(245,200,66,.3);
+}
+.logo-text{display:flex;flex-direction:column;gap:2px}
+.logo-name{
+  font-size:21px;font-weight:900;letter-spacing:-.03em;line-height:1;
+  background:linear-gradient(135deg,#fff 40%,rgba(255,255,255,.5));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo-tag{font-size:9.5px;font-weight:700;color:#f5c842;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+
+.divider{display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.2);font-size:10.5px;font-weight:600;letter-spacing:.05em}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+
+.fields{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.flbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase}
+.fwrap{position:relative}
+.fico{position:absolute;top:50%;right:13px;transform:translateY(-50%);font-size:14px;opacity:.25;pointer-events:none}
+.finp{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;color:#f0f0f8;font-family:'Cairo',sans-serif;font-size:14px;
+  padding:13px 42px 13px 14px;outline:none;transition:all .2s;
+  direction:ltr;-webkit-appearance:none;appearance:none;
+}
+.finp:focus{border-color:rgba(245,200,66,.5);background:rgba(245,200,66,.04);box-shadow:0 0 0 3px rgba(245,200,66,.08)}
+.finp::placeholder{color:rgba(255,255,255,.14)}
+
+.err{
+  display:none;align-items:center;gap:8px;
+  background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.2);
+  border-radius:9px;padding:10px 13px;font-size:12px;color:#ff8a8a;
+}
+.err.show{display:flex}
+
+.sbtn{
+  position:relative;overflow:hidden;width:100%;padding:14px;
+  background:linear-gradient(135deg,#f5c842 0%,#e8b830 100%);
+  border:none;border-radius:12px;color:#111;font-family:'Cairo',sans-serif;
+  font-size:15px;font-weight:800;cursor:pointer;letter-spacing:-.01em;
+  transition:transform .15s,box-shadow .15s,filter .15s;
+  box-shadow:0 4px 20px rgba(245,200,66,.35);
+}
+.sbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);pointer-events:none}
+.sbtn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(245,200,66,.45);filter:brightness(1.05)}
+.sbtn:active{transform:scale(.98)}
+.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.foot{text-align:center;font-size:9.5px;color:rgba(255,255,255,.12);letter-spacing:.04em}
+
+@media(max-width:440px){
+  .card{padding:28px 18px 24px;border-radius:20px;gap:18px}
+  .logo-mark{width:40px;height:40px;font-size:19px;border-radius:12px}
+  .logo-name{font-size:19px}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+<div class="wrap">
+  <div class="card">
+    <div class="logo-row">
+      <div class="logo-mark">✦</div>
+      <div class="logo-text">
+        <span class="logo-name">Xarz Studio</span>
+        <span class="logo-tag">Quote Maker</span>
+      </div>
+    </div>
+
+    <div class="divider">تسجيل الدخول</div>
+
+    <div class="fields">
+      <div class="field">
+        <span class="flbl">البريد الإلكتروني</span>
+        <div class="fwrap">
+          <span class="fico">✉️</span>
+          <input type="email" id="li-email" class="finp" placeholder="example@email.com" autocomplete="email" inputmode="email">
+        </div>
+      </div>
+      <div class="field">
+        <span class="flbl">كلمة المرور</span>
+        <div class="fwrap">
+          <span class="fico">🔒</span>
+          <input type="password" id="li-pass" class="finp" placeholder="••••••••" autocomplete="current-password">
+        </div>
+      </div>
+    </div>
+
+    <div class="err" id="li-err">
+      <span>⚠️</span><span id="li-err-msg">بيانات غير صحيحة</span>
+    </div>
+
+    <button class="sbtn" id="li-btn" onclick="doLogin()">دخول ←</button>
+
+    <p class="foot">Xarz Studio · جميع الحقوق محفوظة</p>
+  </div>
+</div>
+<script src="login.js"></script>
+</body>
+</html>
